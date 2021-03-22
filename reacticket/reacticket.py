@@ -33,6 +33,7 @@ class ReacTicket(commands.Cog):
             "report": 0,
             "enabled": False,
             "created": {},
+            "index": 1
         }
 
         self.config = Config.get_conf(self, identifier=473541068378341376, force_registration=True)
@@ -149,10 +150,11 @@ class ReacTicket(commands.Cog):
         }
         for role in all_roles:
             overwrites[role] = can_read
-
+        ind = await self.config.guild(guild).index()
         created_channel = await category.create_text_channel(
-            f"ticket-{payload.user_id}", overwrites=overwrites
+            f"ticket-{str(ind).zfill(4)}", overwrites=overwrites
         )
+        await self.config.guild(guild).index().set(ind+ 1)
         if guild_settings["openmessage"] == "{default}":
             if guild_settings["usercanclose"]:
                 sent = await created_channel.send(
